@@ -12,9 +12,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import serial
 
 class CircleWidget(QtWidgets.QWidget):
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setMinimumSize(50, 50)
+        
+
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)  # For smoother circles
@@ -551,9 +554,11 @@ class Ui_Dialog(object):
  
     def putValues(self):
         try:
-            ser = serial.Serial('COM5', 9600, timeout=1.5)
+            self.ser = serial.Serial('COM5', 9600, timeout=1.5)
+    
             try:
-                rs = ser.readline().decode("utf-8")
+                
+                rs = self.ser.readline().decode("utf-8")
                 if(rs != None and rs[3] == '1'):
                     seperatedData = rs.split(",")
                     self.lineEdit.setText(seperatedData[2])
@@ -586,6 +591,12 @@ class Ui_Dialog(object):
                 print("Not getting value")
         except:
             print("COM port not connected")
+        
+    # def sendCommand(command):
+    #     ser.write(command.encode('utf-8'))
+
+    def printSerial(self,line):
+        self.ser.write(line.encode('utf-8'))
 
     def on_pushButton_clicked(self):
         line_edit_value = self.lineEdit.text()
@@ -594,13 +605,21 @@ class Ui_Dialog(object):
         line_edit_value3 = self.lineEdit_8.text()
         line_edit_value4 = self.lineEdit_7.text()
         
-        print("values of electro Pnumatic contactor")
-        print("------------------------------------")
-        print("Pickup voltage :"+line_edit_value)
-        print("Drop Voltage:"+line_edit_value1)
-        print("Current:"+line_edit_value2)
-        print("Coil resistance:"+line_edit_value3)
-        print("Pnumatic Pressure:"+line_edit_value4+"\n")
+        # print("values of electro Pnumatic contactor")
+        # print("------------------------------------")
+        # print("Pickup voltage :"+line_edit_value)
+        # print("Drop Voltage:"+line_edit_value1)
+        # print("Current:"+line_edit_value2)
+        # print("Coil resistance:"+line_edit_value3)
+        # print("Pnumatic Pressure:"+line_edit_value4+"\n")
+        self.printSerial("E P C\n")
+        self.printSerial("--------\n")
+        self.printSerial("Pickup voltage :"+line_edit_value+"\n")
+        self.printSerial("Drop Voltage:"+line_edit_value1+"\n")
+        self.printSerial("Current:"+line_edit_value2+"\n")
+        self.printSerial("Coil resistance:"+line_edit_value3+"\n")
+        self.printSerial("Pnumatic Pressure:"+line_edit_value4+"\n\n")
+        
         
         line_edit_value11 = self.lineEdit_24.text()
         line_edit_value12 = self.lineEdit_18.text()
@@ -609,14 +628,23 @@ class Ui_Dialog(object):
         line_edit_value15 = self.lineEdit_22.text()
         line_edit_value16 = self.lineEdit_21.text()
         
-        print("values of electro Magnetic contactor")
-        print("------------------------------------")
-        print("Pickup voltage :"+line_edit_value11)
-        print("Drop Voltage:"+line_edit_value12)
-        print("Current:"+line_edit_value13)
-        print("Coil resistance:"+line_edit_value14)
-        print("No.of Operations:"+line_edit_value15)
-        print("Coil temperature:"+line_edit_value16+"\n")
+        # print("values of electro Magnetic contactor")
+        # print("------------------------------------")
+        # print("Pickup voltage :"+line_edit_value11)
+        # print("Drop Voltage:"+line_edit_value12)
+        # print("Current:"+line_edit_value13)
+        # print("Coil resistance:"+line_edit_value14)
+        # print("No.of Operations:"+line_edit_value15)
+        # print("Coil temperature:"+line_edit_value16+"\n")
+
+        self.printSerial("E M C\n")
+        self.printSerial("--------\n")
+        self.printSerial("Pickup voltage :"+line_edit_value11+"\n")
+        self.printSerial("Drop Voltage:"+line_edit_value12+"\n")
+        self.printSerial("Current:"+line_edit_value13+"\n")
+        self.printSerial("Coil resistance:"+line_edit_value14+"\n")
+        self.printSerial("No.of Operations:"+line_edit_value15+"\n")
+        self.printSerial("Coil temperature:"+line_edit_value16+"\n\n")
         
         line_edit_value21 = self.lineEdit_25.text()
         line_edit_value22 = self.lineEdit_26.text()
@@ -625,14 +653,23 @@ class Ui_Dialog(object):
         line_edit_value25 = self.lineEdit_28.text()
         line_edit_value26 = self.lineEdit_29.text()
         
-        print("values of electro Magnetic contactor")
-        print("------------------------------------")
-        print("Pickup voltage :"+line_edit_value21)
-        print("Drop Voltage:"+line_edit_value22)
-        print("Current:"+line_edit_value23)
-        print("Coil resistance:"+line_edit_value24)
-        print("No.of Operations:"+line_edit_value25)
-        print("Coil temperature:"+line_edit_value26)
+        # print("values of electro Magnetic contactor")
+        # print("------------------------------------")
+        # print("Pickup voltage :"+line_edit_value21)
+        # print("Drop Voltage:"+line_edit_value22)
+        # print("Current:"+line_edit_value23)
+        # print("Coil resistance:"+line_edit_value24)
+        # print("No.of Operations:"+line_edit_value25)
+        # print("Coil temperature:"+line_edit_value26)
+
+        self.printSerial("E M C \n")
+        self.printSerial("--------\n")
+        self.printSerial("Pickup voltage :"+line_edit_value21+"\n")
+        self.printSerial("Drop Voltage:"+line_edit_value22+"\n")
+        self.printSerial("Current:"+line_edit_value23+"\n") 
+        self.printSerial("Coil resistance:"+line_edit_value24+"\n")
+        self.printSerial("No.of Operations:"+line_edit_value25+"\n")
+        self.printSerial("Coil temperature:"+line_edit_value26+"\n\n\n\n\n")
         
 
     # Perform additional actions here
