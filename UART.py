@@ -10,14 +10,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import serial
+from PyQt5.QtCore import QTimer
+from datetime import datetime
 
 class CircleWidget(QtWidgets.QWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setMinimumSize(50, 50)
-        
-
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)  # For smoother circles
@@ -30,6 +30,7 @@ class CircleWidget(QtWidgets.QWidget):
 
 
 class Ui_Dialog(object):
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(934, 369)
@@ -502,6 +503,13 @@ class Ui_Dialog(object):
         self.circle_widget4 = CircleWidget(Dialog)
         self.circle_widget4.setGeometry(850, 250, 4, 4)
 
+        #NEW FUNCTION CALLES
+        self.qTimer = QTimer()
+        self.qTimer.setInterval(45)
+        self.qTimer.timeout.connect(self.putValues)
+        self.qTimer.start()
+        #NEW FUNCTION CALLES
+
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
@@ -514,7 +522,7 @@ class Ui_Dialog(object):
         self.pushButton.setText(_translate("Dialog", "Exit"))
         self.label.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline; color:#1a5fb4;\">Relay&amp;Contactor Test Bench</span></p></body></html>"))
         
-        self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#1c71d8;\">Eletro Pnumatic Copntactor</span></p></body></html>"))
+        self.label_2.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#1c71d8;\">Eletro Pnumatic Contactor</span></p></body></html>"))
         self.label_4.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#1c71d8;\">Electro-Magnetic Contactor</span></p></body></html>"))
         self.label_3.setText(_translate("Dialog", "<html><head/><body><p><span style=\" color:#1c71d8;\">Electro-Magnetic Contactor</span></p></body></html>"))
         self.label_5.setText(_translate("Dialog", "Pickup Voltage:"))
@@ -554,36 +562,39 @@ class Ui_Dialog(object):
  
     def putValues(self):
         try:
-            self.ser = serial.Serial('COM5', 9600, timeout=1.5)
+            self.ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
     
             try:
                 
                 rs = self.ser.readline().decode("utf-8")
-                if(rs != None and rs[3] == '1'):
-                    seperatedData = rs.split(",")
-                    self.lineEdit.setText(seperatedData[2])
-                    self.lineEdit_2.setText(seperatedData[3])
-                    self.lineEdit_6.setText(seperatedData[4])
-                    self.lineEdit_8.setText(seperatedData[5])
-                    self.lineEdit_7.setText(seperatedData[6])
+                print("RX:",rs)
 
-                if(rs != None and rs[3] == '2'):
-                    seperatedData = rs.split(",")
-                    self.lineEdit_24.setText(seperatedData[2])
-                    self.lineEdit_18.setText(seperatedData[3])
-                    self.lineEdit_19.setText(seperatedData[4])
-                    self.lineEdit_20.setText(seperatedData[5])
-                    self.lineEdit_22.setText(seperatedData[6])
-                    self.lineEdit_21.setText(seperatedData[7])
+                if(rs.find("$")!=-1 and rs.find("#")!=-1):#rs[0] == '$' and rs[len(rs)-1] == '#'
+                    if(rs != None and rs[3] == '1'):
+                        seperatedData = rs.split(",")
+                        self.lineEdit.setText(seperatedData[2])
+                        self.lineEdit_2.setText(seperatedData[3])
+                        self.lineEdit_6.setText(seperatedData[4])
+                        self.lineEdit_8.setText(seperatedData[5])
+                        self.lineEdit_7.setText(seperatedData[6])
 
-                if(rs != None and rs[3] == '3'):
-                    seperatedData = rs.split(",")
-                    self.lineEdit_25.setText(seperatedData[2])
-                    self.lineEdit_26.setText(seperatedData[3])
-                    self.lineEdit_23.setText(seperatedData[4])
-                    self.lineEdit_27.setText(seperatedData[5])
-                    self.lineEdit_28.setText(seperatedData[6])
-                    self.lineEdit_29.setText(seperatedData[7])
+                    if(rs != None and rs[3] == '2'):
+                        seperatedData = rs.split(",")
+                        self.lineEdit_24.setText(seperatedData[2])
+                        self.lineEdit_18.setText(seperatedData[3])
+                        self.lineEdit_19.setText(seperatedData[4])
+                        self.lineEdit_20.setText(seperatedData[5])
+                        self.lineEdit_22.setText(seperatedData[6])
+                        self.lineEdit_21.setText(seperatedData[7])
+
+                    if(rs != None and rs[3] == '3'):
+                        seperatedData = rs.split(",")
+                        self.lineEdit_25.setText(seperatedData[2])
+                        self.lineEdit_26.setText(seperatedData[3])
+                        self.lineEdit_23.setText(seperatedData[4])
+                        self.lineEdit_27.setText(seperatedData[5])
+                        self.lineEdit_28.setText(seperatedData[6])
+                        self.lineEdit_29.setText(seperatedData[7])
                     
 
             except IndexError:
@@ -612,6 +623,13 @@ class Ui_Dialog(object):
         # print("Current:"+line_edit_value2)
         # print("Coil resistance:"+line_edit_value3)
         # print("Pnumatic Pressure:"+line_edit_value4+"\n")
+        
+        DateTime = datetime.now()
+        dt_string = DateTime.strftime("%d/%m/%Y %H:%M:%S")
+        # print(dt_string)
+        self.printSerial("     TACHYON AUTOMATIONS\n")
+        self.printSerial("    Relay Test Jig Report\n")
+        self.printSerial("Time Stamp : "+dt_string+"\n\n")
         self.printSerial("E P C\n")
         self.printSerial("--------\n")
         self.printSerial("Pickup voltage :"+line_edit_value+"\n")
